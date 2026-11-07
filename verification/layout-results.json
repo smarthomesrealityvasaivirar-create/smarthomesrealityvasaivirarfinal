@@ -1,0 +1,212 @@
+[
+  {
+    "page": "home",
+    "width": 320,
+    "scrollWidth": 320,
+    "pass": true
+  },
+  {
+    "page": "rent",
+    "width": 320,
+    "scrollWidth": 320,
+    "pass": true
+  },
+  {
+    "page": "buy",
+    "width": 320,
+    "scrollWidth": 320,
+    "pass": true
+  },
+  {
+    "page": "property",
+    "width": 320,
+    "scrollWidth": 320,
+    "pass": true
+  },
+  {
+    "page": "contact",
+    "width": 320,
+    "scrollWidth": 320,
+    "pass": true
+  },
+  {
+    "page": "sell",
+    "width": 320,
+    "scrollWidth": 320,
+    "pass": true
+  },
+  {
+    "page": "about",
+    "width": 320,
+    "scrollWidth": 320,
+    "pass": true
+  },
+  {
+    "page": "home",
+    "width": 360,
+    "scrollWidth": 360,
+    "pass": true
+  },
+  {
+    "page": "rent",
+    "width": 360,
+    "scrollWidth": 360,
+    "pass": true
+  },
+  {
+    "page": "buy",
+    "width": 360,
+    "scrollWidth": 360,
+    "pass": true
+  },
+  {
+    "page": "property",
+    "width": 360,
+    "scrollWidth": 360,
+    "pass": true
+  },
+  {
+    "page": "contact",
+    "width": 360,
+    "scrollWidth": 360,
+    "pass": true
+  },
+  {
+    "page": "sell",
+    "width": 360,
+    "scrollWidth": 360,
+    "pass": true
+  },
+  {
+    "page": "about",
+    "width": 360,
+    "scrollWidth": 360,
+    "pass": true
+  },
+  {
+    "page": "home",
+    "width": 390,
+    "scrollWidth": 390,
+    "pass": true
+  },
+  {
+    "page": "rent",
+    "width": 390,
+    "scrollWidth": 390,
+    "pass": true
+  },
+  {
+    "page": "buy",
+    "width": 390,
+    "scrollWidth": 390,
+    "pass": true
+  },
+  {
+    "page": "property",
+    "width": 390,
+    "scrollWidth": 390,
+    "pass": true
+  },
+  {
+    "page": "contact",
+    "width": 390,
+    "scrollWidth": 390,
+    "pass": true
+  },
+  {
+    "page": "sell",
+    "width": 390,
+    "scrollWidth": 390,
+    "pass": true
+  },
+  {
+    "page": "about",
+    "width": 390,
+    "scrollWidth": 390,
+    "pass": true
+  },
+  {
+    "page": "home",
+    "width": 768,
+    "scrollWidth": 768,
+    "pass": true
+  },
+  {
+    "page": "rent",
+    "width": 768,
+    "scrollWidth": 768,
+    "pass": true
+  },
+  {
+    "page": "buy",
+    "width": 768,
+    "scrollWidth": 768,
+    "pass": true
+  },
+  {
+    "page": "property",
+    "width": 768,
+    "scrollWidth": 768,
+    "pass": true
+  },
+  {
+    "page": "contact",
+    "width": 768,
+    "scrollWidth": 768,
+    "pass": true
+  },
+  {
+    "page": "sell",
+    "width": 768,
+    "scrollWidth": 768,
+    "pass": true
+  },
+  {
+    "page": "about",
+    "width": 768,
+    "scrollWidth": 768,
+    "pass": true
+  },
+  {
+    "page": "home",
+    "width": 1440,
+    "scrollWidth": 1440,
+    "pass": true
+  },
+  {
+    "page": "rent",
+    "width": 1440,
+    "scrollWidth": 1440,
+    "pass": true
+  },
+  {
+    "page": "buy",
+    "width": 1440,
+    "scrollWidth": 1440,
+    "pass": true
+  },
+  {
+    "page": "property",
+    "width": 1440,
+    "scrollWidth": 1440,
+    "pass": true
+  },
+  {
+    "page": "contact",
+    "width": 1440,
+    "scrollWidth": 1440,
+    "pass": true
+  },
+  {
+    "page": "sell",
+    "width": 1440,
+    "scrollWidth": 1440,
+    "pass": true
+  },
+  {
+    "page": "about",
+    "width": 1440,
+    "scrollWidth": 1440,
+    "pass": true
+  }
+]

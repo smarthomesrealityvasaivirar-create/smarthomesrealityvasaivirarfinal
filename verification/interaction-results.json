@@ -1,0 +1,58 @@
+[
+  {
+    "name": "reduced-motion entrance removed",
+    "pass": true
+  },
+  {
+    "name": "failed image has explicit fallback",
+    "pass": true
+  },
+  {
+    "name": "favorite toggles",
+    "pass": true
+  },
+  {
+    "name": "favorite persists on reload",
+    "pass": true
+  },
+  {
+    "name": "filter opens as a native modal and receives keyboard focus",
+    "pass": true
+  },
+  {
+    "name": "filter selection invokes URL update",
+    "pass": true
+  },
+  {
+    "name": "Escape closes filters",
+    "pass": true
+  },
+  {
+    "name": "gallery opens",
+    "pass": true
+  },
+  {
+    "name": "gallery keyboard next",
+    "pass": true
+  },
+  {
+    "name": "gallery previous button",
+    "pass": true
+  },
+  {
+    "name": "gallery Escape closes",
+    "pass": true
+  },
+  {
+    "name": "corrupt saved-home storage recovers",
+    "pass": true
+  },
+  {
+    "name": "entrance exits when WebGL is unavailable",
+    "pass": true
+  },
+  {
+    "name": "no uncaught JavaScript errors",
+    "pass": true
+  }
+]

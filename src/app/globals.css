@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+/* Network-independent typography: matches the reviewed phone previews. */
+:root {
+  --font-playfair: Georgia, "Times New Roman", serif;
+  --font-inter: Arial, Helvetica, sans-serif;
+  --font-plex-mono: "Courier New", monospace;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+  .rail { scroll-behavior: smooth; }
+}
+
+/*
+  Smart Home Reality design tokens (Tailwind v4 reads @theme; tailwind.config.* is not used).
+  Contrast (WCAG AA) checked: gold-deep on bone 6.0:1, stone on bone 6.4:1, gold on ink 9.5:1.
+  Use text-gold / text-gold-light ONLY on dark backgrounds.
+*/
+@theme {
+  --color-ink: #080808;
+  --color-ink-800: #141312;
+  --color-ink-700: #1f1d1a;
+  --color-bone: #faf8f5;
+  --color-bone-100: #f2efe9;
+  --color-bone-200: #e8e4dc;
+  --color-stone: #5f5b54;
+  --color-gold: #d4af37;
+  --color-gold-light: #e6c973;
+  --color-gold-deep: #7a5a12;
+  --color-whatsapp: #25d366;
+  --color-whatsapp-ink: #0b6b34;
+
+  --font-display: var(--font-playfair), Georgia, serif;
+  --font-sans: var(--font-inter), system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, Menlo, Consolas, monospace;
+
+  --ease-luxe: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-door: cubic-bezier(0.7, 0, 0.2, 1);
+
+  --tracking-wide2: 0.14em;
+  --tracking-wide3: 0.28em;
+  --tracking-luxe: 0.22em;
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-bone font-sans text-ink antialiased;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+}
+
+@layer components {
+  .btn-gold { @apply inline-flex min-h-11 items-center justify-center gap-2 px-6 py-3 font-mono text-xs font-semibold uppercase tracking-wide2 transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-60 bg-gold text-ink hover:bg-gold-light; }
+  .btn-dark { @apply inline-flex min-h-11 items-center justify-center gap-2 px-6 py-3 font-mono text-xs font-semibold uppercase tracking-wide2 transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-60 bg-ink text-bone hover:bg-ink-700; }
+  .btn-outline { @apply inline-flex min-h-11 items-center justify-center gap-2 px-6 py-3 font-mono text-xs font-semibold uppercase tracking-wide2 transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-60 border border-ink/25 text-ink hover:border-gold-deep hover:text-gold-deep; }
+  .btn-outline-light { @apply inline-flex min-h-11 items-center justify-center gap-2 px-6 py-3 font-mono text-xs font-semibold uppercase tracking-wide2 transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-60 border border-bone/30 text-bone hover:border-gold hover:text-gold-light; }
+  .btn-whatsapp { @apply inline-flex min-h-11 items-center justify-center gap-2 px-6 py-3 font-mono text-xs font-semibold uppercase tracking-wide2 transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-60 bg-whatsapp text-ink hover:brightness-95; }
+
+  .field-label { @apply mb-1.5 block text-sm font-medium text-ink; }
+  .field {
+    @apply block min-h-11 w-full border border-ink/15 bg-white px-3.5 py-2.5 text-[15px] text-ink placeholder:text-stone/70 focus:border-gold-deep focus:outline-none focus:ring-2 focus:ring-gold/30;
+  }
+  .field-error { @apply mt-1 text-sm text-red-700; }
+  .eyebrow { @apply font-mono text-xs uppercase tracking-luxe; }
+
+  .skeleton { @apply animate-pulse bg-bone-200; }
+
+  /* Horizontal swipe rail for phones; becomes a normal grid from md up */
+  .rail {
+    @apply -mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-5 px-5 pb-2 md:mx-0 md:grid md:snap-none md:gap-6 md:overflow-visible md:px-0 md:pb-0;
+    scrollbar-width: none;
+  }
+  .rail::-webkit-scrollbar { display: none; }
+  .rail > * { @apply w-[78%] shrink-0 snap-start sm:w-[46%] md:w-auto; }
+  .no-scrollbar { scrollbar-width: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .section { @apply py-12 md:py-24; }
+}
+
+@media print {
+  header, footer, .no-print, [data-floating] { display: none !important; }
+  body { background: white; }
+  main { padding: 0 !important; }
+}
