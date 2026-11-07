@@ -93,25 +93,6 @@ function plasterTexture() {
   return t
 }
 
-/** Warm studio reflection map generated instantly without ReadPixels GPU stall. */
-function makeEnvironment() {
-  const c = document.createElement('canvas')
-  c.width = 128
-  c.height = 64
-  const g = c.getContext('2d')!
-  const grad = g.createLinearGradient(0, 0, 0, 64)
-  grad.addColorStop(0, '#ffe2b0')
-  grad.addColorStop(0.3, '#ffc77a')
-  grad.addColorStop(0.7, '#2b1b11')
-  grad.addColorStop(1, '#0b0806')
-  g.fillStyle = grad
-  g.fillRect(0, 0, 128, 64)
-  const t = new THREE.CanvasTexture(c)
-  t.colorSpace = THREE.SRGBColorSpace
-  t.mapping = THREE.EquirectangularReflectionMapping
-  return t
-}
-
 function buildLeaf(side: 1 | -1, wood: THREE.Material, darkWood: THREE.Material, brass: THREE.Material, hammered: THREE.Material) {
   // side = 1: left leaf (hinge at -x, extends +x). side = -1: right leaf.
   const pivot = new THREE.Group()
@@ -186,7 +167,7 @@ function buildLeaf(side: 1 | -1, wood: THREE.Material, darkWood: THREE.Material,
 
 export function createDoorScene(canvas: HTMLCanvasElement, opts: { interiorUrl: string; onDone: () => void }): DoorScene {
   const mobile = window.innerWidth < 768
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: !mobile, powerPreference: 'high-performance' })
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: !mobile, powerPreference: 'default' })
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, mobile ? 1.5 : 2))
   renderer.outputColorSpace = THREE.SRGBColorSpace
   renderer.toneMapping = THREE.ACESFilmicToneMapping
@@ -197,7 +178,7 @@ export function createDoorScene(canvas: HTMLCanvasElement, opts: { interiorUrl: 
   const scene = new THREE.Scene()
   scene.background = new THREE.Color(0x0b0806)
   scene.fog = new THREE.Fog(0x0b0806, 6, 14)
-  scene.environment = makeEnvironment()
+  // scene.environment = makeEnvironment()
   scene.environmentIntensity = 0.55
 
   const wood = new THREE.MeshStandardMaterial({ map: woodTexture(7), roughness: 0.52, metalness: 0 })

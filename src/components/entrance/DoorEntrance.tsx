@@ -8,7 +8,7 @@ import './door.css'
 type Phase = 'closed' | 'opening' | 'fading' | 'gone'
 
 /**
- * Full-screen 3D entrance. Shown on every fresh visit (client asked for it), never on /admin
+ * Full-screen 3D entrance. Shown on every fresh visit, never on /admin
  * (this component only lives in the public (site) layout), skipped for prefers-reduced-motion
  * and when WebGL is unavailable. Real page content is server-rendered underneath for SEO.
  */
@@ -24,6 +24,7 @@ export function DoorEntrance() {
   const finishTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const loadTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const openingTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const autoOpenTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const openPendingRef = useRef(false)
 
   const go = (p: Phase) => {
@@ -35,6 +36,7 @@ export function DoorEntrance() {
     if (phaseRef.current === 'gone' || phaseRef.current === 'fading') return
     if (loadTimer.current) clearTimeout(loadTimer.current)
     if (openingTimer.current) clearTimeout(openingTimer.current)
+    if (autoOpenTimer.current) clearTimeout(autoOpenTimer.current)
     go('fading')
     document.body.style.overflow = ''
     finishTimer.current = setTimeout(() => {
@@ -45,6 +47,10 @@ export function DoorEntrance() {
   }, [])
 
   const open = useCallback(() => {
+    if (autoOpenTimer.current) {
+      clearTimeout(autoOpenTimer.current)
+      autoOpenTimer.current = null
+    }
     if (phaseRef.current !== 'closed') return
     if (!sceneRef.current) {
       openPendingRef.current = true
@@ -53,7 +59,7 @@ export function DoorEntrance() {
     }
     go('opening')
     sceneRef.current.open()
-    openingTimer.current = setTimeout(finish, 9000)
+    openingTimer.current = setTimeout(finish, 4000)
   }, [finish])
 
   useEffect(() => {
@@ -64,19 +70,35 @@ export function DoorEntrance() {
     document.body.style.overflow = 'hidden'
     openBtnRef.current?.focus({ preventScroll: true })
     let cancelled = false
-    loadTimer.current = setTimeout(finish, 6500)
+    loadTimer.current = setTimeout(finish, 8000)
+
     import('./doorScene')
       .then(({ createDoorScene }) => {
         if (cancelled || !canvasRef.current || phaseRef.current !== 'closed') return
         try {
-          sceneRef.current = createDoorScene(canvasRef.current, { interiorUrl: '/doors/interior.webp', onDone: finish })
-          if (loadTimer.current) clearTimeout(loadTimer.current)
+          sceneRef.current = createDoorScene(canvasRef.current, {
+            interiorUrl: '/doors/interior.webp',
+            onDone: finish,
+          })
+          if (loadTimer.current) {
+            clearTimeout(loadTimer.current)
+            loadTimer.current = null
+          }
           requestAnimationFrame(() => {
             setReady(true)
             if (openPendingRef.current) {
               go('opening')
               sceneRef.current?.open()
-              openingTimer.current = setTimeout(finish, 9000)
+              openingTimer.current = setTimeout(finish, 4000)
+            } else {
+              // Automatically swing open after 1.4s so visitors don't have to guess to click
+              autoOpenTimer.current = setTimeout(() => {
+                if (phaseRef.current === 'closed' && sceneRef.current) {
+                  go('opening')
+                  sceneRef.current.open()
+                  openingTimer.current = setTimeout(finish, 4000)
+                }
+              }, 1400)
             }
           })
         } catch {
@@ -84,11 +106,13 @@ export function DoorEntrance() {
         }
       })
       .catch(finish)
+
     return () => {
       cancelled = true
       if (finishTimer.current) clearTimeout(finishTimer.current)
       if (loadTimer.current) clearTimeout(loadTimer.current)
       if (openingTimer.current) clearTimeout(openingTimer.current)
+      if (autoOpenTimer.current) clearTimeout(autoOpenTimer.current)
       document.body.style.overflow = ''
       sceneRef.current?.dispose()
       sceneRef.current = null
@@ -137,7 +161,7 @@ export function DoorEntrance() {
           className="pointer-events-auto mt-3 inline-flex min-h-11 items-center gap-2 rounded-full px-5 font-mono text-xs uppercase tracking-wide3 text-[#f1dfae]"
         >
           <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-gold" aria-hidden />
-          {openingQueued ? 'Opening the doors...' : ready ? 'Tap to open the doors' : 'Preparing your entrance'}
+          {openingQueued ? 'Opening the doors...' : ready ? 'Tap or wait to open doors' : 'Preparing your entrance'}
         </button>
       </div>
       <button
