@@ -30,14 +30,7 @@ function bezier(x1: number, y1: number, x2: number, y2: number) {
 const heavy = bezier(0.7, 0, 0.2, 1)
 const clamp01 = (v: number) => Math.min(Math.max(v, 0), 1)
 
-/** Procedural walnut grain: vertical figure, pores and colour drift, fast canvas generation. */
-const textureCache = new Map<string, THREE.CanvasTexture>()
-
-function woodTexture(seed: number) {
-  const cacheKey = `wood-${seed}`
-  if (textureCache.has(cacheKey)) {
-    return textureCache.get(cacheKey)!.clone()
-  }
+function makeWoodTexture(seed: number) {
   const c = document.createElement('canvas')
   c.width = 256
   c.height = 512
@@ -66,16 +59,10 @@ function woodTexture(seed: number) {
   }
   const t = new THREE.CanvasTexture(c)
   t.colorSpace = THREE.SRGBColorSpace
-  t.anisotropy = 4
-  textureCache.set(cacheKey, t)
   return t
 }
 
-function plasterTexture() {
-  const cacheKey = 'plaster'
-  if (textureCache.has(cacheKey)) {
-    return textureCache.get(cacheKey)!.clone()
-  }
+function makePlasterTexture() {
   const c = document.createElement('canvas')
   c.width = c.height = 128
   const g = c.getContext('2d')!
@@ -89,7 +76,6 @@ function plasterTexture() {
   t.colorSpace = THREE.SRGBColorSpace
   t.wrapS = t.wrapT = THREE.RepeatWrapping
   t.repeat.set(6, 4)
-  textureCache.set(cacheKey, t)
   return t
 }
 
@@ -172,20 +158,24 @@ export function createDoorScene(canvas: HTMLCanvasElement, opts: { interiorUrl: 
   renderer.outputColorSpace = THREE.SRGBColorSpace
   renderer.toneMapping = THREE.ACESFilmicToneMapping
   renderer.toneMappingExposure = 1.25
-  renderer.shadowMap.enabled = true
+  renderer.shadowMap.enabled = !mobile
   renderer.shadowMap.type = THREE.PCFShadowMap
 
   const scene = new THREE.Scene()
   scene.background = new THREE.Color(0x0b0806)
   scene.fog = new THREE.Fog(0x0b0806, 6, 14)
-  // scene.environment = makeEnvironment()
   scene.environmentIntensity = 0.55
 
-  const wood = new THREE.MeshStandardMaterial({ map: woodTexture(7), roughness: 0.52, metalness: 0 })
-  const darkWood = new THREE.MeshStandardMaterial({ map: woodTexture(91), color: 0xb08a6a, roughness: 0.6 })
+  const woodTexture = makeWoodTexture(7)
+  const darkWoodTexture = makeWoodTexture(91)
+  const bumpTexture = makeWoodTexture(3)
+  const plasterMap = makePlasterTexture()
+
+  const wood = new THREE.MeshStandardMaterial({ map: woodTexture, roughness: 0.52, metalness: 0 })
+  const darkWood = new THREE.MeshStandardMaterial({ map: darkWoodTexture, color: 0xb08a6a, roughness: 0.6 })
   const brass = new THREE.MeshStandardMaterial({ color: 0xd9b25c, metalness: 1, roughness: 0.22 })
-  const hammered = new THREE.MeshStandardMaterial({ color: 0xd6ad55, metalness: 1, roughness: 0.42, bumpMap: woodTexture(3), bumpScale: 2 })
-  const plaster = new THREE.MeshStandardMaterial({ map: plasterTexture(), roughness: 0.95 })
+  const hammered = new THREE.MeshStandardMaterial({ color: 0xd6ad55, metalness: 1, roughness: 0.42, bumpMap: bumpTexture, bumpScale: 2 })
+  const plaster = new THREE.MeshStandardMaterial({ map: plasterMap, roughness: 0.95 })
   const marble = new THREE.MeshStandardMaterial({ color: 0x3a2f26, roughness: 0.28, metalness: 0 })
 
   // Wall with a real opening (3 blocks), architrave, floor
@@ -219,7 +209,7 @@ export function createDoorScene(canvas: HTMLCanvasElement, opts: { interiorUrl: 
     const spot = new THREE.SpotLight(0xffc98a, 16, 8, 0.85, 0.65, 1.5)
     spot.position.set(x * 0.85, 2.6, 1.2)
     spot.target.position.set(x * 0.15, 0.9, 0)
-    spot.castShadow = !mobile || x < 0
+    spot.castShadow = !mobile
     spot.shadow.mapSize.set(mobile ? 512 : 1024, mobile ? 512 : 1024)
     spot.shadow.bias = -0.0004
     scene.add(spot, spot.target)
@@ -231,7 +221,7 @@ export function createDoorScene(canvas: HTMLCanvasElement, opts: { interiorUrl: 
   scene.add(roomGroup)
   const roomTex = new THREE.TextureLoader().load(opts.interiorUrl)
   roomTex.colorSpace = THREE.SRGBColorSpace
-  const back = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 4.82), new THREE.MeshBasicMaterial({ map: roomTex, toneMapped: false }))
+  const back = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 4.82), new THREE.MeshBasicMaterial({ color: 0xffdfaa, map: roomTex, toneMapped: false }))
   back.position.set(0, 1.75, -2.4)
   roomGroup.add(back)
   const innerFloor = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 2.4), new THREE.MeshStandardMaterial({ color: 0x8f7658, roughness: 0.22 }))
@@ -319,6 +309,10 @@ export function createDoorScene(canvas: HTMLCanvasElement, opts: { interiorUrl: 
         })
       })
       scene.environment?.dispose()
+      woodTexture.dispose()
+      darkWoodTexture.dispose()
+      bumpTexture.dispose()
+      plasterMap.dispose()
       roomTex.dispose()
       renderer.dispose()
     },
