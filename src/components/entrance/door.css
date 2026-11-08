@@ -7,10 +7,21 @@
   cursor: pointer;
   -webkit-user-select: none;
   user-select: none;
+  touch-action: manipulation;
   transition: opacity 0.55s ease;
 }
 .door-stage.is-done { opacity: 0; pointer-events: none; }
-.door-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity 0.6s ease; }
+.door-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  opacity: 0;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: opacity 0.6s ease;
+}
 .door-canvas.is-ready { opacity: 1; }
 .door-brand {
   position: absolute;
@@ -21,9 +32,9 @@
   color: #f1dfae;
   text-shadow: 0 2px 18px rgba(0, 0, 0, 0.9);
   transition: opacity 0.4s ease;
-  pointer-events: none;
+  cursor: pointer;
 }
-.is-opening .door-brand { opacity: 0; }
+.is-opening .door-brand { opacity: 0; pointer-events: none; }
 .door-skip {
   position: absolute;
   top: max(16px, env(safe-area-inset-top));
@@ -39,5 +50,5 @@
   letter-spacing: 0.08em;
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
+  cursor: pointer;
 }
-/* Door entrance styles */

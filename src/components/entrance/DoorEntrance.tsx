@@ -24,7 +24,6 @@ export function DoorEntrance() {
   const finishTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const loadTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const openingTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const autoOpenTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const openPendingRef = useRef(false)
 
   const go = (p: Phase) => {
@@ -36,7 +35,6 @@ export function DoorEntrance() {
     if (phaseRef.current === 'gone' || phaseRef.current === 'fading') return
     if (loadTimer.current) clearTimeout(loadTimer.current)
     if (openingTimer.current) clearTimeout(openingTimer.current)
-    if (autoOpenTimer.current) clearTimeout(autoOpenTimer.current)
     go('fading')
     document.body.style.overflow = ''
     finishTimer.current = setTimeout(() => {
@@ -47,10 +45,6 @@ export function DoorEntrance() {
   }, [])
 
   const open = useCallback(() => {
-    if (autoOpenTimer.current) {
-      clearTimeout(autoOpenTimer.current)
-      autoOpenTimer.current = null
-    }
     if (phaseRef.current !== 'closed') return
     if (!sceneRef.current) {
       openPendingRef.current = true
@@ -90,34 +84,44 @@ export function DoorEntrance() {
               go('opening')
               sceneRef.current?.open()
               openingTimer.current = setTimeout(finish, 4000)
-            } else {
-              // Automatically swing open after 1.4s so visitors don't have to guess to click
-              autoOpenTimer.current = setTimeout(() => {
-                if (phaseRef.current === 'closed' && sceneRef.current) {
-                  go('opening')
-                  sceneRef.current.open()
-                  openingTimer.current = setTimeout(finish, 4000)
-                }
-              }, 1400)
             }
           })
-        } catch {
+        } catch (err) {
+          console.error('Door entrance 3D error:', err)
           finish() // no WebGL
         }
       })
-      .catch(finish)
+      .catch(err => {
+        console.error('Door scene import error:', err)
+        finish()
+      })
 
     return () => {
       cancelled = true
       if (finishTimer.current) clearTimeout(finishTimer.current)
       if (loadTimer.current) clearTimeout(loadTimer.current)
       if (openingTimer.current) clearTimeout(openingTimer.current)
-      if (autoOpenTimer.current) clearTimeout(autoOpenTimer.current)
       document.body.style.overflow = ''
       sceneRef.current?.dispose()
       sceneRef.current = null
     }
   }, [finish])
+
+  useEffect(() => {
+    if (phase !== 'closed') return
+    const handleGlobalTap = (e: MouseEvent | TouchEvent | PointerEvent) => {
+      if ((e.target as HTMLElement)?.closest?.('.door-skip')) return
+      open()
+    }
+    window.addEventListener('pointerdown', handleGlobalTap, { capture: true, passive: true })
+    window.addEventListener('touchstart', handleGlobalTap, { capture: true, passive: true })
+    window.addEventListener('click', handleGlobalTap, { capture: true })
+    return () => {
+      window.removeEventListener('pointerdown', handleGlobalTap, { capture: true })
+      window.removeEventListener('touchstart', handleGlobalTap, { capture: true })
+      window.removeEventListener('click', handleGlobalTap, { capture: true })
+    }
+  }, [phase, open])
 
   const onKeyDown = (e: ReactKeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Escape') {
@@ -144,12 +148,21 @@ export function DoorEntrance() {
       className={`door-stage ${phase === 'opening' ? 'is-opening' : ''} ${phase === 'fading' ? 'is-done' : ''}`}
       role="dialog"
       aria-modal="true"
-      aria-label={`Welcome to ${site.name}. Open the doors to enter.`}
+      aria-label={`Welcome to ${site.name}. Tap to open the doors.`}
       onClick={open}
+      onPointerDown={open}
+      onTouchEnd={open}
       onKeyDown={onKeyDown}
     >
-      <canvas ref={canvasRef} className={`door-canvas ${ready ? 'is-ready' : ''}`} aria-hidden />
-      <div className="door-brand">
+      <canvas
+        ref={canvasRef}
+        className={`door-canvas ${ready ? 'is-ready' : ''}`}
+        aria-hidden
+        onClick={open}
+        onPointerDown={open}
+        onTouchEnd={open}
+      />
+      <div className="door-brand" onClick={open} onPointerDown={open} onTouchEnd={open}>
         <p className="font-display text-[clamp(20px,3.2vw,34px)] uppercase tracking-[0.3em]">{site.name}</p>
         <button
           ref={openBtnRef}
@@ -158,10 +171,18 @@ export function DoorEntrance() {
             e.stopPropagation()
             open()
           }}
+          onPointerDown={e => {
+            e.stopPropagation()
+            open()
+          }}
+          onTouchEnd={e => {
+            e.stopPropagation()
+            open()
+          }}
           className="pointer-events-auto mt-3 inline-flex min-h-11 items-center gap-2 rounded-full px-5 font-mono text-xs uppercase tracking-wide3 text-[#f1dfae]"
         >
           <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-gold" aria-hidden />
-          {openingQueued ? 'Opening the doors...' : ready ? 'Tap or wait to open doors' : 'Preparing your entrance'}
+          {openingQueued ? 'Opening doors...' : ready ? 'Tap anywhere to open doors' : 'Preparing your entrance'}
         </button>
       </div>
       <button
@@ -169,6 +190,13 @@ export function DoorEntrance() {
         type="button"
         className="door-skip"
         onClick={e => {
+          e.stopPropagation()
+          finish()
+        }}
+        onPointerDown={e => {
+          e.stopPropagation()
+        }}
+        onTouchEnd={e => {
           e.stopPropagation()
           finish()
         }}

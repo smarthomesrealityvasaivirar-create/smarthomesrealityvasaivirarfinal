@@ -276,8 +276,8 @@ export function createDoorScene(canvas: HTMLCanvasElement, opts: { interiorUrl: 
     const idle = (now - t0) / 1000
     let p = 0
     if (openedAt) p = clamp01((now - openedAt) / OPEN_MS)
-    const swing = heavy(clamp01((p - 0.06) / 0.72))
-    const walk = heavy(clamp01((p - 0.18) / 0.82))
+    const swing = heavy(clamp01(p / 0.82))
+    const walk = heavy(clamp01((p - 0.1) / 0.9))
     left.rotation.y = swing * THREE.MathUtils.degToRad(96)
     right.rotation.y = -swing * THREE.MathUtils.degToRad(96)
     seamGlow.material.opacity = openedAt ? Math.max(0, 0.8 - swing * 3) : 0.55 + Math.sin(idle * 2.2) * 0.25
