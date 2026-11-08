@@ -10,24 +10,9 @@ export type DoorScene = { open: () => void; dispose: () => void }
 const DOOR_W = 0.92 // one leaf
 const DOOR_H = 2.45
 const DOOR_T = 0.065
-const OPEN_MS = 2700
+const OPEN_MS = 2100
 
-function bezier(x1: number, y1: number, x2: number, y2: number) {
-  const cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx
-  const cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by
-  const sx = (t: number) => ((ax * t + bx) * t + cx) * t
-  const sy = (t: number) => ((ay * t + by) * t + cy) * t
-  return (x: number) => {
-    let t = x
-    for (let i = 0; i < 8; i++) {
-      const d = 3 * ax * t * t + 2 * bx * t + cx
-      if (Math.abs(d) < 1e-6) break
-      t -= (sx(t) - x) / d
-    }
-    return sy(Math.min(Math.max(t, 0), 1))
-  }
-}
-const heavy = bezier(0.7, 0, 0.2, 1)
+const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3)
 const clamp01 = (v: number) => Math.min(Math.max(v, 0), 1)
 
 function makeWoodTexture(seed: number) {
@@ -276,8 +261,8 @@ export function createDoorScene(canvas: HTMLCanvasElement, opts: { interiorUrl: 
     const idle = (now - t0) / 1000
     let p = 0
     if (openedAt) p = clamp01((now - openedAt) / OPEN_MS)
-    const swing = heavy(clamp01(p / 0.82))
-    const walk = heavy(clamp01((p - 0.1) / 0.9))
+    const swing = easeOutCubic(clamp01(p / 0.85))
+    const walk = easeOutCubic(clamp01((p - 0.04) / 0.96))
     left.rotation.y = swing * THREE.MathUtils.degToRad(96)
     right.rotation.y = -swing * THREE.MathUtils.degToRad(96)
     seamGlow.material.opacity = openedAt ? Math.max(0, 0.8 - swing * 3) : 0.55 + Math.sin(idle * 2.2) * 0.25

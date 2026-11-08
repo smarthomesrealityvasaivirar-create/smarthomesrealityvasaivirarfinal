@@ -53,7 +53,7 @@ export function DoorEntrance() {
     }
     go('opening')
     sceneRef.current.open()
-    openingTimer.current = setTimeout(finish, 4000)
+    openingTimer.current = setTimeout(finish, 2800)
   }, [finish])
 
   useEffect(() => {
@@ -83,7 +83,7 @@ export function DoorEntrance() {
             if (openPendingRef.current) {
               go('opening')
               sceneRef.current?.open()
-              openingTimer.current = setTimeout(finish, 4000)
+              openingTimer.current = setTimeout(finish, 2800)
             }
           })
         } catch (err) {
@@ -114,10 +114,12 @@ export function DoorEntrance() {
       open()
     }
     window.addEventListener('pointerdown', handleGlobalTap, { capture: true, passive: true })
+    window.addEventListener('mousedown', handleGlobalTap, { capture: true, passive: true })
     window.addEventListener('touchstart', handleGlobalTap, { capture: true, passive: true })
     window.addEventListener('click', handleGlobalTap, { capture: true })
     return () => {
       window.removeEventListener('pointerdown', handleGlobalTap, { capture: true })
+      window.removeEventListener('mousedown', handleGlobalTap, { capture: true })
       window.removeEventListener('touchstart', handleGlobalTap, { capture: true })
       window.removeEventListener('click', handleGlobalTap, { capture: true })
     }
@@ -148,9 +150,10 @@ export function DoorEntrance() {
       className={`door-stage ${phase === 'opening' ? 'is-opening' : ''} ${phase === 'fading' ? 'is-done' : ''}`}
       role="dialog"
       aria-modal="true"
-      aria-label={`Welcome to ${site.name}. Tap to open the doors.`}
+      aria-label={`Welcome to ${site.name}. Tap or click to open the doors.`}
       onClick={open}
       onPointerDown={open}
+      onMouseDown={open}
       onTouchEnd={open}
       onKeyDown={onKeyDown}
     >
@@ -160,9 +163,10 @@ export function DoorEntrance() {
         aria-hidden
         onClick={open}
         onPointerDown={open}
+        onMouseDown={open}
         onTouchEnd={open}
       />
-      <div className="door-brand" onClick={open} onPointerDown={open} onTouchEnd={open}>
+      <div className="door-brand" onClick={open} onPointerDown={open} onMouseDown={open} onTouchEnd={open}>
         <p className="font-display text-[clamp(20px,3.2vw,34px)] uppercase tracking-[0.3em]">{site.name}</p>
         <button
           ref={openBtnRef}
@@ -175,6 +179,10 @@ export function DoorEntrance() {
             e.stopPropagation()
             open()
           }}
+          onMouseDown={e => {
+            e.stopPropagation()
+            open()
+          }}
           onTouchEnd={e => {
             e.stopPropagation()
             open()
@@ -182,7 +190,7 @@ export function DoorEntrance() {
           className="pointer-events-auto mt-3 inline-flex min-h-11 items-center gap-2 rounded-full px-5 font-mono text-xs uppercase tracking-wide3 text-[#f1dfae]"
         >
           <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-gold" aria-hidden />
-          {openingQueued ? 'Opening doors...' : ready ? 'Tap anywhere to open doors' : 'Preparing your entrance'}
+          {openingQueued ? 'Opening doors...' : ready ? 'Tap or click anywhere to open doors' : 'Preparing your entrance'}
         </button>
       </div>
       <button

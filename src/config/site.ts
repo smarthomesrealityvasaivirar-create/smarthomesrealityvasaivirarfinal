@@ -28,9 +28,9 @@ export const site = {
   phone: { display: '+91 96732 47515', tel: '+919673247515' },
   email: 'smarthomesrealityvasaivirar@gmail.com',
   team: [
-    { name: 'Avinash', role: 'Senior broker, resale & owners', phone: '9673247515', primary: true },
+    { name: 'Yash', role: 'Site visits & key handover', phone: '7507591932', primary: true },
+    { name: 'Avinash', role: 'Senior broker, resale & owners', phone: '9673247515' },
     { name: 'Swapnali', role: 'Rentals & tenant onboarding', phone: '7066246138' },
-    { name: 'Yash', role: 'Site visits & key handover', phone: '7507591932' },
   ] as TeamMember[],
 
   // Confirmed by client 5 Nov 2026
